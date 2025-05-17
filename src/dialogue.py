@@ -40,26 +40,20 @@ class DialogueSystem:
         return self.dialogue_options_list[:4]
 
     def draw_dialogue_options(self, screen, font):
+        box_height = 60
+        gap = 10  # gap between boxes
+
+    # Starting y-position for the bottom box (50 pixels from bottom)
+        start_y = self.screen_height - box_height - 50  
+        x = 50  # fixed x position for all boxes (left padding)
+
         for i, option in enumerate(self.selected_dialogue_options):
-            # Calculate the position based on the screen dimensions
-            x = (self.screen_width // 4) * (i % 2 + 1) - 150
-            y = self.screen_height // 2 + 20 + (i // 2) * (self.screen_height // 4)
-
-            # Adjust the width of the box based on the length of the text
+            y = start_y - i * (box_height + gap)
             text_width = font.size(option.text)[0]
-            box_width = min(250, text_width + 40)  # Ensure the box is at most 250 pixels wide
+            box_width = min(250, text_width + 40)  # max width 250
+    
+            option.rect = pygame.Rect(x, y, box_width, box_height)
 
-            # Position the boxes in each corner of the lower half of the screen
-            if i == 0:
-                x, y = 50, self.screen_height // 2 + 20
-            elif i == 1:
-                x, y = self.screen_width - box_width - 50, self.screen_height // 2 + 20
-            elif i == 2:
-                x, y = 50, self.screen_height - 80
-            elif i == 3:
-                x, y = self.screen_width - box_width - 50, self.screen_height - 80
-
-            option.rect = pygame.Rect(x, y, box_width, 60)  # Height set to 60 pixels
             stone_gray = (120, 120, 120)
             border_light = (200, 200, 200)
             draw_stone_box(screen, option.rect, stone_gray, border_light, border_radius=12)
