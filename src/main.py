@@ -52,7 +52,7 @@ def pick_new_character(exclude_index=None):
 
 def main_menu():
     while True:
-        screen.fill(WHITE)
+        screen.fill(BLACK)
         draw_text('Main Menu', font, BLACK, screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4)
 
         mx, my = pygame.mouse.get_pos()
@@ -85,7 +85,7 @@ def main_menu():
 def options_menu():
     global SCREEN_WIDTH, SCREEN_HEIGHT, screen  # Declare screen as global
     while True:
-        screen.fill(WHITE)
+        screen.fill(BLACK)
         draw_text('Options Menu', font, BLACK, screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4)
 
         mx, my = pygame.mouse.get_pos()
@@ -150,8 +150,8 @@ def game_loop():
     conversations = 0
 
     while True:
-        screen.fill(WHITE)
-        scaled_background = pygame.transform.scale(background.image, (SCREEN_WIDTH, SCREEN_HEIGHT // 2))
+        screen.fill(BLACK)
+        scaled_background = pygame.transform.scale(background.image, (SCREEN_WIDTH, SCREEN_HEIGHT))
         screen.blit(scaled_background, (0, 0))
 
         char_width, char_height = character.current_sprite.get_size()
@@ -203,8 +203,8 @@ def game_loop():
             waiting_for_space = True
             while waiting_for_space:
                 # Draw everything as usual
-                screen.fill(WHITE)
-                scaled_background = pygame.transform.scale(background.image, (SCREEN_WIDTH, SCREEN_HEIGHT // 2))
+                screen.fill(BLACK)
+                scaled_background = pygame.transform.scale(background.image, (SCREEN_WIDTH, SCREEN_HEIGHT))
                 screen.blit(scaled_background, (0, 0))
 
                 char_width, char_height = character.current_sprite.get_size()

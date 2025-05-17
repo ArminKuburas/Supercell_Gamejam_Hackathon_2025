@@ -60,7 +60,9 @@ class DialogueSystem:
                 x, y = self.screen_width - box_width - 50, self.screen_height - 80
 
             option.rect = pygame.Rect(x, y, box_width, 60)  # Height set to 60 pixels
-            pygame.draw.rect(screen, (0, 0, 0), option.rect)
+            stone_gray = (120, 120, 120)
+            border_light = (200, 200, 200)
+            draw_stone_box(screen, option.rect, stone_gray, border_light, border_radius=12)
             draw_text(option.text, font, (255, 255, 255), screen, option.rect.centerx, option.rect.centery, max_width=box_width)
 
     def handle_click(self, pos):
@@ -70,7 +72,21 @@ class DialogueSystem:
                 return option
         return None
 
+def draw_stone_box(screen, rect, base_color, border_color, border_radius=10):
+    # Draw shadow
+    shadow_rect = rect.copy()
+    shadow_rect.x += 4
+    shadow_rect.y += 4
+    shadow_color = (30, 30, 30, 100)  # semi-transparent dark
+    shadow_surface = pygame.Surface((shadow_rect.width, shadow_rect.height), pygame.SRCALPHA)
+    pygame.draw.rect(shadow_surface, shadow_color, shadow_surface.get_rect(), border_radius=border_radius)
+    screen.blit(shadow_surface, shadow_rect.topleft)
 
+    # Draw main stone rectangle (solid fill)
+    pygame.draw.rect(screen, base_color, rect, border_radius=border_radius)
+
+    # Draw border outline (thickness 3)
+    pygame.draw.rect(screen, border_color, rect, width=3, border_radius=border_radius)
 
 def draw_text(text, font, color, surface, x, y, max_width=None):
     # Adjust font size based on the length of the text and the max width of the box
