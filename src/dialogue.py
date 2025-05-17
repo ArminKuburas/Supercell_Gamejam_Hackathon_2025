@@ -33,6 +33,27 @@ class DialogueSystem:
         self.screen_height = screen_height
         self.dialogue_options_list = dialogue_options  # Use the existing dialogue_options list
         self.selected_dialogue_options = self.select_random_dialogue_options()
+        # Load the background image for dialogue options
+        self.option_background = None
+        
+        # Try multiple possible paths for the dialogue background
+        possible_paths = [
+            'assets/backgrounds/dialogue_bg.png',
+            'assets/dialogue_bg.png',
+            '../assets/backgrounds/dialogue_bg.png',
+            '../assets/dialogue_bg.png'
+        ]
+        
+        for path in possible_paths:
+            try:
+                self.option_background = pygame.image.load(path).convert_alpha()
+                print(f"Successfully loaded dialogue background from: {path}")
+                break
+            except (pygame.error, FileNotFoundError):
+                continue
+                
+        if self.option_background is None:
+            print("Warning: Could not load dialogue background image. Using stone box instead.")
 
     def select_random_dialogue_options(self):
         # Shuffle the list of dialogue options and select the first 4 unique options
@@ -40,26 +61,49 @@ class DialogueSystem:
         return self.dialogue_options_list[:4]
 
     def draw_dialogue_options(self, screen, font):
-        box_height = 60
-        gap = 10  # gap between boxes
+        # Keep large box height
+        box_height = 210
+        
+        # NO gap between boxes - boxes will overlap slightly for a stacked effect
+        gap = -150  # Negative gap means boxes will overlap by 5 pixels
+        
+        # Make boxes wider - fixed width regardless of text length
+        box_width = 500  # Fixed width for all boxes
+        
+        # Starting y-position for the bottom box
+        start_y = self.screen_height - 40 - box_height
+        
+        # Center the boxes horizontally
+        # x = (self.screen_width - box_width) // 2
+        x = 50
 
-    # Starting y-position for the bottom box (50 pixels from bottom)
-        start_y = self.screen_height - box_height - 50  
-        x = 50  # fixed x position for all boxes (left padding)
-
-        for i, option in enumerate(self.selected_dialogue_options):
-            y = start_y - i * (box_height + gap)
-            text_width = font.size(option.text)[0]
-            box_width = min(250, text_width + 40)  # max width 250
-    
+        # Draw from bottom to top so the top option appears on top when overlapping
+        for i, option in enumerate(reversed(self.selected_dialogue_options)):
+            idx = len(self.selected_dialogue_options) - 1 - i  # Convert to original index
+            y = start_y - idx * (box_height + gap)
+            
+            # Create the rectangle for this option
             option.rect = pygame.Rect(x, y, box_width, box_height)
 
-            stone_gray = (120, 120, 120)
-            border_light = (200, 200, 200)
-            draw_stone_box(screen, option.rect, stone_gray, border_light, border_radius=12)
-            draw_text(option.text, font, (255, 255, 255), screen, option.rect.centerx, option.rect.centery, max_width=box_width)
+            # Use the image background if available, otherwise use the stone box
+            if self.option_background:
+                # Scale the background image to fit the option box
+                scaled_bg = pygame.transform.scale(self.option_background, (box_width, box_height))
+                screen.blit(scaled_bg, option.rect)
+            else:
+                # Fallback to stone box
+                stone_gray = (120, 120, 120)
+                border_light = (200, 200, 200)
+                draw_stone_box(screen, option.rect, stone_gray, border_light, border_radius=20)
+                
+            # Center the text both horizontally and vertically with slightly larger font
+            draw_text(option.text, font, (255, 255, 255), screen, 
+                     option.rect.centerx, option.rect.centery, 
+                     max_width=box_width - 60,
+                     size_reduction=1.5)  # Slightly larger text (1.5 instead of 2)
 
     def handle_click(self, pos):
+        # Check from top to bottom (reversed) so we select the topmost option when they overlap
         for option in self.selected_dialogue_options:
             if option.rect.collidepoint(pos):
                 print(f"Selected: {option.text}")
@@ -69,8 +113,8 @@ class DialogueSystem:
 def draw_stone_box(screen, rect, base_color, border_color, border_radius=10):
     # Draw shadow
     shadow_rect = rect.copy()
-    shadow_rect.x += 4
-    shadow_rect.y += 4
+    shadow_rect.x += 6
+    shadow_rect.y += 6
     shadow_color = (30, 30, 30, 100)  # semi-transparent dark
     shadow_surface = pygame.Surface((shadow_rect.width, shadow_rect.height), pygame.SRCALPHA)
     pygame.draw.rect(shadow_surface, shadow_color, shadow_surface.get_rect(), border_radius=border_radius)
@@ -79,18 +123,22 @@ def draw_stone_box(screen, rect, base_color, border_color, border_radius=10):
     # Draw main stone rectangle (solid fill)
     pygame.draw.rect(screen, base_color, rect, border_radius=border_radius)
 
-    # Draw border outline (thickness 3)
-    pygame.draw.rect(screen, border_color, rect, width=3, border_radius=border_radius)
+    # Draw border outline (thickness 4)
+    pygame.draw.rect(screen, border_color, rect, width=4, border_radius=border_radius)
 
-def draw_text(text, font, color, surface, x, y, max_width=None):
+def draw_text(text, font, color, surface, x, y, max_width=None, size_reduction=1):
+    # Create a temporary font with reduced size
+    font_size = int(FONT_SIZE / size_reduction)  # Reduce font size by the specified factor
+    temp_font = pygame.font.SysFont(None, font_size)
+    
     # Adjust font size based on the length of the text and the max width of the box
     if max_width is not None:
-        font_size = FONT_SIZE
-        while font.size(text)[0] > max_width and font_size > 8:
+        while temp_font.size(text)[0] > max_width and font_size > 12:  # Lower minimum font size
             font_size -= 1
-            font = pygame.font.SysFont(None, font_size)
+            temp_font = pygame.font.SysFont(None, font_size)
 
-    textobj = font.render(text, True, color)
+    # Render the text
+    textobj = temp_font.render(text, True, color)
     textrect = textobj.get_rect()
     textrect.center = (x, y)
     surface.blit(textobj, textrect)
@@ -100,7 +148,7 @@ class DialogueOption:
     def __init__(self, text, characteristics):
         self.text = text
         self.characteristics = characteristics
-        self.rect = pygame.Rect(0, 0, 200, 60)  # Default position and size
+        self.rect = pygame.Rect(0, 0, 500, 210)  # Keep the large box size
 
     def __repr__(self):
         return f"DialogueOption(text='{self.text}', characteristics={self.characteristics})"

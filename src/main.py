@@ -50,22 +50,92 @@ def pick_new_character(exclude_index=None):
     background = Background(bg_name)
     return character, background, idx
 
+def load_logo_image():
+    """Helper function to load the logo image"""
+    try:
+        # Try the exact path specified
+        logo_path = 'assets/backgrounds/logo.jpeg'
+        print(f"Attempting to load logo from: {logo_path}")
+        logo_image = pygame.image.load(logo_path)
+        print(f"Successfully loaded logo from: {logo_path}")
+        return logo_image
+    except (pygame.error, FileNotFoundError) as e:
+        print(f"Error loading from primary path: {e}")
+        
+        # Try alternative paths as fallback
+        alternative_paths = [
+            'assets/backgrounds/logo.jpg',
+            '../assets/backgrounds/logo.jpeg',
+            '../assets/backgrounds/logo.jpg',
+            'assets/logo.jpeg',
+            'assets/logo.jpg'
+        ]
+        
+        for path in alternative_paths:
+            try:
+                print(f"Attempting to load logo from: {path}")
+                logo_image = pygame.image.load(path)
+                print(f"Successfully loaded logo from: {path}")
+                return logo_image
+            except (pygame.error, FileNotFoundError) as e:
+                print(f"Failed to load from {path}: {e}")
+                
+        print("WARNING: Could not load logo image from any path. Using black background instead.")
+        return None
+
 def main_menu():
+    # Load the logo image
+    logo_image = load_logo_image()
+    
+    # Create a semi-transparent overlay for better text visibility
+    overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+    overlay.fill((0, 0, 0, 128))  # Semi-transparent black
+    
     while True:
+        # Clear the screen
         screen.fill(BLACK)
-        draw_text('Main Menu', font, BLACK, screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4)
+        
+        # Draw the logo if available
+        if logo_image:
+            # Scale the logo to fit the screen
+            scaled_logo = pygame.transform.scale(logo_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+            screen.blit(scaled_logo, (0, 0))
+            
+            # Add semi-transparent overlay for better text visibility
+            screen.blit(overlay, (0, 0))
+        else:
+            # If logo couldn't be loaded, just use black background
+            screen.fill(BLACK)
+        
+        # Draw the title
+        title_font = pygame.font.SysFont(None, FONT_SIZE * 2)  # Larger font for title
+        # draw_text('Visual Novel', title_font, WHITE, screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4)
 
         mx, my = pygame.mouse.get_pos()
 
-        button_1 = pygame.Rect(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 - 50, 200, 50)
-        button_2 = pygame.Rect(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 20, 200, 50)
-        button_3 = pygame.Rect(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 90, 200, 50)
-        pygame.draw.rect(screen, BLACK, button_1)
-        pygame.draw.rect(screen, BLACK, button_2)
-        pygame.draw.rect(screen, BLACK, button_3)
-        draw_text("Play", font, WHITE, screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 30)
-        draw_text("Options", font, WHITE, screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 40)
-        draw_text("Quit", font, WHITE, screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 110)
+        # Create button rectangles
+        button_width = 200
+        button_height = 50
+        button_1 = pygame.Rect(SCREEN_WIDTH // 2 - button_width // 2, SCREEN_HEIGHT // 2 - 50, button_width, button_height)
+        button_2 = pygame.Rect(SCREEN_WIDTH // 2 - button_width // 2, SCREEN_HEIGHT // 2 + 20, button_width, button_height)
+        button_3 = pygame.Rect(SCREEN_WIDTH // 2 - button_width // 2, SCREEN_HEIGHT // 2 + 90, button_width, button_height)
+        
+        # Draw buttons with hover effect
+        for button, text, y_pos in [
+            (button_1, "Play", SCREEN_HEIGHT // 2 - 25),
+            (button_2, "Options", SCREEN_HEIGHT // 2 + 45),
+            (button_3, "Quit", SCREEN_HEIGHT // 2 + 115)
+        ]:
+            # Check if mouse is over button
+            if button.collidepoint((mx, my)):
+                button_color = (100, 100, 100)  # Lighter when hovered
+            else:
+                button_color = (50, 50, 50)  # Darker when not hovered
+                
+            # Draw button with border
+            pygame.draw.rect(screen, WHITE, button, border_radius=10)  # Border
+            pygame.draw.rect(screen, button_color, button.inflate(-4, -4), border_radius=8)  # Button
+            draw_text(text, font, WHITE, screen, button.centerx, button.centery)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -82,23 +152,84 @@ def main_menu():
 
         pygame.display.update()
 
+def restart_game(new_width, new_height):
+    """Completely restart the game with new resolution settings"""
+    global SCREEN_WIDTH, SCREEN_HEIGHT, screen, font
+    
+    # Update the global variables
+    SCREEN_WIDTH = new_width
+    SCREEN_HEIGHT = new_height
+    
+    # Quit pygame completely
+    pygame.quit()
+    
+    # Restart pygame from scratch
+    pygame.init()
+    
+    # Set up the display with new dimensions
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.display.set_caption("Visual Novel")
+    
+    # Reinitialize font
+    font = pygame.font.SysFont(None, FONT_SIZE)
+    
+    # Start the game from the main menu
+    main_menu()
+
 def options_menu():
-    global SCREEN_WIDTH, SCREEN_HEIGHT, screen  # Declare screen as global
+    global SCREEN_WIDTH, SCREEN_HEIGHT, screen
+    
+    # Store original dimensions
+    original_width, original_height = SCREEN_WIDTH, SCREEN_HEIGHT
+    
+    # Load the logo image
+    logo_image = load_logo_image()
+    
+    # Create overlay
+    overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+    overlay.fill((0, 0, 0, 160))
+    
     while True:
+        # Clear the screen
         screen.fill(BLACK)
-        draw_text('Options Menu', font, BLACK, screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4)
+        
+        # Draw the logo if available
+        if logo_image:
+            scaled_logo = pygame.transform.scale(logo_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+            screen.blit(scaled_logo, (0, 0))
+            screen.blit(overlay, (0, 0))
+        else:
+            # If logo couldn't be loaded, just use black background
+            screen.fill(BLACK)
+        
+        # Draw the title
+        draw_text('Options Menu', font, WHITE, screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4)
 
         mx, my = pygame.mouse.get_pos()
 
-        button_1 = pygame.Rect(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 - 50, 200, 50)
-        button_2 = pygame.Rect(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 20, 200, 50)
-        button_3 = pygame.Rect(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 90, 200, 50)
-        pygame.draw.rect(screen, BLACK, button_1)
-        pygame.draw.rect(screen, BLACK, button_2)
-        pygame.draw.rect(screen, BLACK, button_3)
-        draw_text("800x600", font, WHITE, screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 30)
-        draw_text("1024x768", font, WHITE, screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 40)
-        draw_text("Back", font, WHITE, screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 110)
+        # Create button rectangles
+        button_width = 200
+        button_height = 50
+        button_1 = pygame.Rect(SCREEN_WIDTH // 2 - button_width // 2, SCREEN_HEIGHT // 2 - 50, button_width, button_height)
+        button_2 = pygame.Rect(SCREEN_WIDTH // 2 - button_width // 2, SCREEN_HEIGHT // 2 + 20, button_width, button_height)
+        button_3 = pygame.Rect(SCREEN_WIDTH // 2 - button_width // 2, SCREEN_HEIGHT // 2 + 90, button_width, button_height)
+        
+        # Draw buttons with hover effect
+        for button, text, y_pos in [
+            (button_1, "800x600", SCREEN_HEIGHT // 2 - 25),
+            (button_2, "1024x768", SCREEN_HEIGHT // 2 + 45),
+            (button_3, "Back", SCREEN_HEIGHT // 2 + 115)
+        ]:
+            # Check if mouse is over button
+            if button.collidepoint((mx, my)):
+                button_color = (100, 100, 100)  # Lighter when hovered
+            else:
+                button_color = (50, 50, 50)  # Darker when not hovered
+                
+            # Draw button with border
+            pygame.draw.rect(screen, WHITE, button, border_radius=10)  # Border
+            pygame.draw.rect(screen, button_color, button.inflate(-4, -4), border_radius=8)  # Button
+            draw_text(text, font, WHITE, screen, button.centerx, button.centery)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -106,17 +237,19 @@ def options_menu():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if button_1.collidepoint((mx, my)):
-                    SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
-                    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+                    if SCREEN_WIDTH != 800 or SCREEN_HEIGHT != 600:
+                        restart_game(800, 600)
+                        return  # This return is important as we've restarted the game
+                
                 if button_2.collidepoint((mx, my)):
-                    SCREEN_WIDTH, SCREEN_HEIGHT = 1024, 768
-                    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+                    if SCREEN_WIDTH != 1024 or SCREEN_HEIGHT != 768:
+                        restart_game(1024, 768)
+                        return  # This return is important as we've restarted the game
+                
                 if button_3.collidepoint((mx, my)):
                     return  # Return to main menu
 
         pygame.display.update()
-
-# ...existing code...
 
 def draw_speech_bubble(text, font, color, surface, center_x, bottom_y, bubble_width=500, bubble_height=80, bubble_color=(255, 255, 255), border_color=(0, 0, 0), border_width=3):
     # Bubble rectangle (rounded)
