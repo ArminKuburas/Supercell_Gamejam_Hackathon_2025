@@ -98,3 +98,42 @@ class Background:
         image_path = get_asset_path(os.path.join(self.base_dir, f"{background_name}.png"))
         # Load the image
         return pygame.image.load(image_path)
+    
+PREDEFINED_CHARACTERS = [
+    {
+        "name": "John",
+        "character_name": "john",
+        "char_type": "warrior",
+        "traits": ["warrior", "serious"],
+        "backgrounds": ["Apartment_Exterior", "Temple_Summer_Afternoon", "Bedroom_Day"]
+    },
+    {
+        "name": "Luna",
+        "character_name": "luna",
+        "char_type": "intellectual",
+        "traits": ["intellectual", "shy"],
+        "backgrounds": ["Apartment_Exterior", "Temple_Summer_Afternoon", "Bedroom_Day"]
+    },
+    {
+        "name": "Mika",
+        "character_name": "mika",
+        "char_type": "romantic",
+        "traits": ["romantic", "friendly"],
+        "backgrounds": ["Apartment_Exterior", "Temple_Summer_Afternoon", "Bedroom_Day"]
+    },
+    {
+        "name": "Rex",
+        "character_name": "rex",
+        "char_type": "sarcastic",
+        "traits": ["sarcastic", "serious"],
+        "backgrounds": ["Apartment_Exterior", "Temple_Summer_Afternoon", "Bedroom_Day"]
+    },
+    {
+        "name": "Sophie",
+        "character_name": "sophie",
+        "char_type": "friendly",
+        "traits": ["friendly", "shy"],
+        "backgrounds": ["Apartment_Exterior", "Temple_Summer_Afternoon", "Bedroom_Day"]
+    },
+    # Add more as needed...
+]

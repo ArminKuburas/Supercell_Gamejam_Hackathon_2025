@@ -4,6 +4,8 @@ from dialogue import DialogueSystem, DialogueOption, DialogueCharacteristic
 from characters import Character, Background
 from config import FONT_SIZE
 
+import random
+from characters import PREDEFINED_CHARACTERS
 
 # Initialize Pygame
 pygame.init()
@@ -27,6 +29,26 @@ def draw_text(text, font, color, surface, x, y):
     textrect = textobj.get_rect()
     textrect.center = (x, y)
     surface.blit(textobj, textrect)
+
+def fade_to_black(surface, duration=1000):
+    fade = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+    fade.fill((0, 0, 0))
+    for alpha in range(0, 255, 10):
+        fade.set_alpha(alpha)
+        surface.blit(fade, (0, 0))
+        pygame.display.update()
+        pygame.time.delay(duration // 25)
+
+def pick_new_character(exclude_index=None):
+    indices = list(range(len(PREDEFINED_CHARACTERS)))
+    if exclude_index is not None:
+        indices.remove(exclude_index)
+    idx = random.choice(indices)
+    char_info = PREDEFINED_CHARACTERS[idx]
+    bg_name = random.choice(char_info["backgrounds"])
+    character = Character(char_info["name"], char_info["character_name"], char_info["char_type"], char_info["traits"])
+    background = Background(bg_name)
+    return character, background, idx
 
 def main_menu():
     while True:
@@ -119,17 +141,19 @@ def draw_dialogue_box(text, font, color, surface, center_x, bottom_y, box_width=
         surface.blit(line_surf, line_rect)
 
 def game_loop():
-    character = Character("John", "john", "warrior", ["shy", "warrior"])
-    background = Background("Apartment_Exterior")
+    current_idx = random.randint(0, len(PREDEFINED_CHARACTERS) - 1)
+    char_info = PREDEFINED_CHARACTERS[current_idx]
+    character = Character(char_info["name"], char_info["character_name"], char_info["char_type"], char_info["traits"])
+    background = Background(random.choice(char_info["backgrounds"]))
     dialogue_system = DialogueSystem(SCREEN_WIDTH, SCREEN_HEIGHT)
-    last_response = ""  # Store the last response
+    last_response = ""
+    conversations = 0
 
     while True:
         screen.fill(WHITE)
         scaled_background = pygame.transform.scale(background.image, (SCREEN_WIDTH, SCREEN_HEIGHT // 2))
         screen.blit(scaled_background, (0, 0))
 
-        # Use the current sprite
         char_width, char_height = character.current_sprite.get_size()
         aspect_ratio = char_width / char_height
         new_char_height = SCREEN_HEIGHT // 2
@@ -139,10 +163,10 @@ def game_loop():
 
         dialogue_system.draw_dialogue_options(screen, font)
 
-        # Draw the character's response below the character
+        # Draw the character's response above the character
         if last_response:
             char_box_center_x = SCREEN_WIDTH // 2
-            char_box_bottom_y = SCREEN_HEIGHT // 4  # Top of character sprite
+            char_box_bottom_y = SCREEN_HEIGHT // 4
             draw_dialogue_box(
                 last_response,
                 font,
@@ -155,6 +179,8 @@ def game_loop():
                 box_color=(0, 0, 0)
             )
 
+        pygame.display.update()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -163,14 +189,79 @@ def game_loop():
                 if event.key == pygame.K_ESCAPE:
                     return
             if event.type == pygame.MOUSEBUTTONDOWN:
-                selected_option = dialogue_system.handle_click(event.pos)
-                if selected_option:
-                    reaction = character.react_to_dialogue(selected_option)
-                    character.set_sprite_by_reaction(reaction)
-                    last_response = character.get_response_by_reaction(reaction)
-                    dialogue_system.selected_dialogue_options = dialogue_system.select_random_dialogue_options()
+                if conversations < 5:
+                    selected_option = dialogue_system.handle_click(event.pos)
+                    if selected_option:
+                        reaction = character.react_to_dialogue(selected_option)
+                        character.set_sprite_by_reaction(reaction)
+                        last_response = character.get_response_by_reaction(reaction)
+                        dialogue_system.selected_dialogue_options = dialogue_system.select_random_dialogue_options()
+                        conversations += 1
 
-        pygame.display.update()
+        # If 5 conversations reached, show prompt and wait for SPACE
+        if conversations >= 5:
+            waiting_for_space = True
+            while waiting_for_space:
+                # Draw everything as usual
+                screen.fill(WHITE)
+                scaled_background = pygame.transform.scale(background.image, (SCREEN_WIDTH, SCREEN_HEIGHT // 2))
+                screen.blit(scaled_background, (0, 0))
+
+                char_width, char_height = character.current_sprite.get_size()
+                aspect_ratio = char_width / char_height
+                new_char_height = SCREEN_HEIGHT // 2
+                new_char_width = int(new_char_height * aspect_ratio)
+                scaled_character = pygame.transform.smoothscale(character.current_sprite, (new_char_width, new_char_height))
+                screen.blit(scaled_character, (SCREEN_WIDTH // 2 - new_char_width // 2, SCREEN_HEIGHT // 4))
+
+                dialogue_system.draw_dialogue_options(screen, font)
+
+                # Draw the character's response above the character
+                if last_response:
+                    char_box_center_x = SCREEN_WIDTH // 2
+                    char_box_bottom_y = SCREEN_HEIGHT // 4
+                    draw_dialogue_box(
+                        last_response,
+                        font,
+                        (255, 255, 255),
+                        screen,
+                        char_box_center_x,
+                        char_box_bottom_y,
+                        box_width=500,
+                        box_height=80,
+                        box_color=(0, 0, 0)
+                    )
+
+                # Draw the "Press SPACE" prompt
+                draw_dialogue_box(
+                    "Press SPACE to meet the next character!",
+                    font,
+                    (255, 255, 0),
+                    screen,
+                    SCREEN_WIDTH // 2,
+                    SCREEN_HEIGHT // 2,
+                    box_width=500,
+                    box_height=80,
+                    box_color=(0, 0, 0)
+                )
+                pygame.display.update()
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            return
+                        if event.key == pygame.K_SPACE:
+                            waiting_for_space = False
+
+            # After exiting the loop, fade and switch character
+            fade_to_black(screen)
+            character, background, current_idx = pick_new_character(exclude_index=current_idx)
+            dialogue_system.selected_dialogue_options = dialogue_system.select_random_dialogue_options()
+            last_response = ""
+            conversations = 0
         
 if __name__ == "__main__":
     main_menu()
