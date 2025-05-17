@@ -55,7 +55,7 @@ def pick_new_character(exclude_index=None):
 
 def main_menu():
     while True:
-        screen.fill(WHITE)
+        screen.fill(BLACK)
         draw_text('Main Menu', font, BLACK, screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4)
 
         mx, my = pygame.mouse.get_pos()
@@ -122,7 +122,7 @@ model_name = "gemma-3-27b-it"
 def options_menu():
     global SCREEN_WIDTH, SCREEN_HEIGHT, screen  # Declare screen as global
     while True:
-        screen.fill(WHITE)
+        screen.fill(BLACK)
         draw_text('Options Menu', font, BLACK, screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4)
 
         mx, my = pygame.mouse.get_pos()
@@ -153,6 +153,36 @@ def options_menu():
 
         pygame.display.update()
 
+# ...existing code...
+
+def draw_speech_bubble(text, font, color, surface, center_x, bottom_y, bubble_width=500, bubble_height=80, bubble_color=(255, 255, 255), border_color=(0, 0, 0), border_width=3):
+    # Bubble rectangle (rounded)
+    bubble_rect = pygame.Rect(center_x - bubble_width // 2, bottom_y - bubble_height, bubble_width, bubble_height)
+
+    # Draw bubble background with border
+    pygame.draw.rect(surface, border_color, bubble_rect, border_radius=20)   # border
+    pygame.draw.rect(surface, bubble_color, bubble_rect.inflate(-border_width*2, -border_width*2), border_radius=20)  # inner bubble
+
+    # Draw the tail as a triangle pointing downwards (you can adjust position)
+    wrapped_lines = []
+    words = text.split(' ')
+    line = ""
+    padding = 15
+    max_text_width = bubble_width - padding * 2
+    for word in words:
+        test_line = line + word + " "
+        if font.size(test_line)[0] > max_text_width:
+            wrapped_lines.append(line)
+            line = word + " "
+        else:
+            line = test_line
+    wrapped_lines.append(line)
+
+    # Draw each line centered inside the bubble with padding
+    for i, line in enumerate(wrapped_lines):
+        line_surf = font.render(line.strip(), True, color)
+        line_rect = line_surf.get_rect(center=(center_x, bubble_rect.top + padding + i * font.get_linesize()))
+        surface.blit(line_surf, line_rect)
 
 def draw_dialogue_box(text, font, color, surface, center_x, bottom_y, box_width=500, box_height=80, box_color=(0,0,0)):
     # Draw the box
@@ -223,16 +253,18 @@ def game_loop():
     conversation_history = []
 
     while True:
-        screen.fill(WHITE)
-        scaled_background = pygame.transform.scale(background.image, (SCREEN_WIDTH, SCREEN_HEIGHT // 2))
+        screen.fill(BLACK)
+        scaled_background = pygame.transform.scale(background.image, (SCREEN_WIDTH, SCREEN_HEIGHT))
         screen.blit(scaled_background, (0, 0))
 
         char_width, char_height = character.current_sprite.get_size()
         aspect_ratio = char_width / char_height
-        new_char_height = SCREEN_HEIGHT // 2
+        new_char_height = SCREEN_HEIGHT - 50
         new_char_width = int(new_char_height * aspect_ratio)
         scaled_character = pygame.transform.smoothscale(character.current_sprite, (new_char_width, new_char_height))
-        screen.blit(scaled_character, (SCREEN_WIDTH // 2 - new_char_width // 2, SCREEN_HEIGHT // 4))
+        offset_x = 250
+        offset_y = 100
+        screen.blit(scaled_character, (SCREEN_WIDTH // 2 - new_char_width // 2 + offset_x, SCREEN_HEIGHT // 4 - offset_y))
 
         dialogue_system.draw_dialogue_options(screen, font)
 
@@ -240,17 +272,18 @@ def game_loop():
         if last_response:
             char_box_center_x = SCREEN_WIDTH // 2
             char_box_bottom_y = SCREEN_HEIGHT // 4
-            draw_dialogue_box(
+            draw_speech_bubble(
                 last_response,
                 font,
-                (255, 255, 255),
+                (0, 0, 0),
                 screen,
-                char_box_center_x,
-                char_box_bottom_y,
-                box_width=500,
-                box_height=80,
-                box_color=(0, 0, 0)
-            )
+                char_box_center_x - 90,
+                char_box_bottom_y - 50,
+                bubble_width=500,
+                bubble_height=80,
+                bubble_color=(255, 255, 255),
+                border_color=(0, 0, 0),
+                border_width=3)
 
         pygame.display.update()
 
@@ -280,47 +313,53 @@ def game_loop():
                         last_response = npc_response
                         dialogue_system.selected_dialogue_options = dialogue_system.select_random_dialogue_options()
                         conversations += 1
-                        
+
         # If 5 conversations reached, show prompt and wait for SPACE
         if conversations >= 5:
             waiting_for_space = True
             while waiting_for_space:
-                # ...draw everything and show prompt...
-                screen.fill(WHITE)
-                scaled_background = pygame.transform.scale(background.image, (SCREEN_WIDTH, SCREEN_HEIGHT // 2))
+                # Draw everything as usual
+                screen.fill(BLACK)
+                scaled_background = pygame.transform.scale(background.image, (SCREEN_WIDTH, SCREEN_HEIGHT))
                 screen.blit(scaled_background, (0, 0))
                 char_width, char_height = character.current_sprite.get_size()
                 aspect_ratio = char_width / char_height
-                new_char_height = SCREEN_HEIGHT // 2
+                new_char_height = SCREEN_HEIGHT - 50
                 new_char_width = int(new_char_height * aspect_ratio)
                 scaled_character = pygame.transform.smoothscale(character.current_sprite, (new_char_width, new_char_height))
-                screen.blit(scaled_character, (SCREEN_WIDTH // 2 - new_char_width // 2, SCREEN_HEIGHT // 4))
+                offset_x = 250
+                offset_y = 100
+                screen.blit(scaled_character, (SCREEN_WIDTH // 2 - new_char_width // 2 + offset_x, SCREEN_HEIGHT // 4 - offset_y))
+
                 dialogue_system.draw_dialogue_options(screen, font)
                 if last_response:
                     char_box_center_x = SCREEN_WIDTH // 2
                     char_box_bottom_y = SCREEN_HEIGHT // 4
-                    draw_dialogue_box(
+                    draw_speech_bubble(
                         last_response,
                         font,
-                        (255, 255, 255),
+                        (0, 0, 0),
                         screen,
-                        char_box_center_x,
-                        char_box_bottom_y,
-                        box_width=500,
-                        box_height=80,
-                        box_color=(0, 0, 0)
-                    )
-                draw_dialogue_box(
+                        char_box_center_x - 90,
+                        char_box_bottom_y - 50,
+                        bubble_width=500,
+                        bubble_height=80,
+                        bubble_color=(255, 255, 255),
+                        border_color=(0, 0, 0),
+                        border_width=3)
+                draw_speech_bubble(
                     "Press SPACE to choose your next location!",
                     font,
-                    (255, 255, 0),
+                    (0, 0, 0),
                     screen,
                     SCREEN_WIDTH // 2,
                     SCREEN_HEIGHT // 2,
-                    box_width=500,
-                    box_height=80,
-                    box_color=(0, 0, 0)
-                )
+                    bubble_width=500,
+                    bubble_height=80,
+                    bubble_color=(255, 255, 255),
+                    border_color=(0, 0, 0),
+                    border_width=3)
+
                 pygame.display.update()
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -343,7 +382,7 @@ def game_loop():
             last_response = ""
             conversations = 0
             conversation_history = []
-        
+
 if __name__ == "__main__":
     main_menu()
 

@@ -1,0 +1,202 @@
+{
+    "classes": [
+        {
+            "id": 0,
+            "name": "Arena Fighter"
+        },
+        {
+            "id": 1,
+            "name": "Beekeeper"
+        },
+        {
+            "id": 2,
+            "name": "Beggar"
+        },
+        {
+            "id": 3,
+            "name": "Blacksmith"
+        },
+        {
+            "id": 4,
+            "name": "City Guard"
+        },
+        {
+            "id": 5,
+            "name": "Cobbler"
+        },
+        {
+            "id": 6,
+            "name": "Eastern Dragon"
+        },
+        {
+            "id": 7,
+            "name": "Fisherman"
+        },
+        {
+            "id": 8,
+            "name": "Ghost"
+        },
+        {
+            "id": 9,
+            "name": "Herbalist"
+        },
+        {
+            "id": 10,
+            "name": "Hobo"
+        },
+        {
+            "id": 11,
+            "name": "Innkeeper"
+        },
+        {
+            "id": 12,
+            "name": "Jailor"
+        },
+        {
+            "id": 13,
+            "name": "Megafan"
+        },
+        {
+            "id": 14,
+            "name": "Mercenary"
+        },
+        {
+            "id": 15,
+            "name": "Monk"
+        },
+        {
+            "id": 16,
+            "name": "Mugger"
+        },
+        {
+            "id": 17,
+            "name": "Priest"
+        },
+        {
+            "id": 18,
+            "name": "Retired Knight"
+        },
+        {
+            "id": 19,
+            "name": "Sellsword Captain"
+        },
+        {
+            "id": 20,
+            "name": "Stable Master"
+        },
+        {
+            "id": 21,
+            "name": "Stray Cat"
+        },
+        {
+            "id": 22,
+            "name": "Street Vendor"
+        },
+        {
+            "id": 23,
+            "name": "Tailor"
+        },
+        {
+            "id": 24,
+            "name": "Tax Collector"
+        },
+        {
+            "id": 25,
+            "name": "Toadseller"
+        },
+        {
+            "id": 26,
+            "name": "Town Crier"
+        },
+        {
+            "id": 27,
+            "name": "Warrior"
+        },
+        {
+            "id": 28,
+            "name": "Wise Old Man"
+        },
+        {
+            "id": 29,
+            "name": "Wizard"
+        }
+    ],
+    "characteristics": [
+        {
+            "id": 0,
+            "name": "Angry"
+        },
+        {
+            "id": 1,
+            "name": "Avoids Eye Contact"
+        },
+        {
+            "id": 2,
+            "name": "Boastful"
+        },
+        {
+            "id": 3,
+            "name": "Calm"
+        },
+        {
+            "id": 4,
+            "name": "Charismatic"
+        },
+        {
+            "id": 5,
+            "name": "Delusional"
+        },
+        {
+            "id": 6,
+            "name": "Fidgets Constantly"
+        },
+        {
+            "id": 7,
+            "name": "Gruff"
+        },
+        {
+            "id": 8,
+            "name": "Heavy Drinker"
+        },
+        {
+            "id": 9,
+            "name": "Kind-hearted"
+        },
+        {
+            "id": 10,
+            "name": "Obsessively Clean"
+        },
+        {
+            "id": 11,
+            "name": "Paranoid"
+        },
+        {
+            "id": 12,
+            "name": "Pious"
+        },
+        {
+            "id": 13,
+            "name": "Rude"
+        },
+        {
+            "id": 14,
+            "name": "Secretive"
+        },
+        {
+            "id": 15,
+            "name": "Stoic"
+        },
+        {
+            "id": 16,
+            "name": "Superstitious"
+        },
+        {
+            "id": 17,
+            "name": "Talkative"
+        },
+        {
+            "id": 18,
+            "name": "Wise"
+        }
+    ]
+}

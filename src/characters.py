@@ -119,35 +119,35 @@ PREDEFINED_CHARACTERS = [
         "character_name": "john",
         "char_type": "warrior",
         "traits": ["warrior", "serious"],
-        "backgrounds": ["Apartment_Exterior", "Temple_Summer_Afternoon", "Bedroom_Day"]
+        "backgrounds": ["alley", "shop", "townsquare", "jail", "sewers", "foodstalls"]
     },
     {
         "name": "Luna",
         "character_name": "luna",
         "char_type": "intellectual",
         "traits": ["intellectual", "shy"],
-        "backgrounds": ["Apartment_Exterior", "Temple_Summer_Afternoon", "Bedroom_Day"]
+        "backgrounds": ["marketstreet", "sewers", "townsquare", "jail", "cursedwell", "shop"]
     },
     {
         "name": "Mika",
         "character_name": "mika",
         "char_type": "romantic",
         "traits": ["romantic", "friendly"],
-        "backgrounds": ["Apartment_Exterior", "Temple_Summer_Afternoon", "Bedroom_Day"]
+        "backgrounds": ["shop", "sewers", "alley", "well", "cursedwell", "foodstalls"]
     },
     {
         "name": "Rex",
         "character_name": "rex",
         "char_type": "sarcastic",
         "traits": ["sarcastic", "serious"],
-        "backgrounds": ["Apartment_Exterior", "Temple_Summer_Afternoon", "Bedroom_Day"]
+        "backgrounds": ["shop", "sewers", "alley", "well", "cursedwell", "foodstalls", "marketstreet"]
     },
     {
         "name": "Sophie",
         "character_name": "sophie",
         "char_type": "friendly",
         "traits": ["friendly", "shy"],
-        "backgrounds": ["Apartment_Exterior", "Temple_Summer_Afternoon", "Bedroom_Day"]
+        "backgrounds": ["alley", "shop", "townsquare", "jail", "sewers", "foodstalls"]
     },
     # Add more as needed...
 ]

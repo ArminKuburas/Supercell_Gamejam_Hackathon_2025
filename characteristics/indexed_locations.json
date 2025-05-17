@@ -1,0 +1,116 @@
+{
+    "locations": [
+        {
+            "id": 0,
+            "name": "Tavern"
+        },
+        {
+            "id": 1,
+            "name": "Street Market"
+        },
+        {
+            "id": 2,
+            "name": "Blacksmith\u2019s Shop"
+        },
+        {
+            "id": 3,
+            "name": "City Garden"
+        },
+        {
+            "id": 4,
+            "name": "City Docks"
+        },
+        {
+            "id": 5,
+            "name": "Town Square"
+        },
+        {
+            "id": 6,
+            "name": "Church Courtyard"
+        },
+        {
+            "id": 7,
+            "name": "Marketplace Alley"
+        },
+        {
+            "id": 8,
+            "name": "Public Well"
+        },
+        {
+            "id": 9,
+            "name": "City Library"
+        },
+        {
+            "id": 10,
+            "name": "Horse Stables"
+        },
+        {
+            "id": 11,
+            "name": "City Sewers Entrance"
+        },
+        {
+            "id": 12,
+            "name": "Graveyard"
+        },
+        {
+            "id": 13,
+            "name": "Jailer\u2019s Quarters"
+        },
+        {
+            "id": 14,
+            "name": "Fisherman\u2019s Wharf"
+        },
+        {
+            "id": 15,
+            "name": "Public Execution Site"
+        },
+        {
+            "id": 16,
+            "name": "Bard\u2019s Stage"
+        },
+        {
+            "id": 17,
+            "name": "Nobleman\u2019s Manor"
+        },
+        {
+            "id": 18,
+            "name": "Thieves\u2019 Den"
+        },
+        {
+            "id": 19,
+            "name": "Magical Artifact Shop"
+        },
+        {
+            "id": 20,
+            "name": "Floating Market"
+        },
+        {
+            "id": 21,
+            "name": "Back Alleyways"
+        },
+        {
+            "id": 22,
+            "name": "Abandoned Warehouses"
+        },
+        {
+            "id": 23,
+            "name": "Smuggler\u2019s Hideout"
+        },
+        {
+            "id": 24,
+            "name": "Underground Gambling Den"
+        },
+        {
+            "id": 25,
+            "name": "Black Market Bazaar"
+        },
+        {
+            "id": 26,
+            "name": "Cursed Well"
+        },
+        {
+            "id": 27,
+            "name": "Underground Fighting Pit"
+        }
+    ]
+}

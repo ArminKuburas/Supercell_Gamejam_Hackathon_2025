@@ -1,0 +1,40 @@
+{
+  "encounter_count": 3,
+  "current_location": "The Toadstool Tavern",
+  "traits": {
+    "reputation": "notorious"
+  },
+  "history": [
+    {
+      "encounter_number": 1,
+      "location": "Temple Plaza",
+      "npc_class": "Priest",
+      "npc_traits": ["stern", "judgmental"],
+      "player_choice": "Attacked the priest",
+      "result": "Killed priest, raised infamy"
+    },
+    {
+      "encounter_number": 2,
+      "location": "Street Market",
+      "npc_class": "Pickpocket",
+      "npc_traits": ["sly", "young"],
+      "player_choice": "Chased and caught the thief",
+      "result": "Gained minor fame"
+    },
+    {
+      "encounter_number": 3,
+      "location": "Underground Gambling Den",
+      "npc_class": "Sellsword Captain",
+      "npc_traits": ["boastful", "wary"],
+      "player_choice": "Tried to bluff",
+      "result": "Sellsword is suspicious"
+    }
+  ],
+  "summary": {
+    "notable_events": [
+      "You killed a priest at Temple Plaza",
+      "You've earned a bad reputation in the merchant quarter",
+      "A sellsword is keeping an eye on you after a tense bluff"
+    ]
+  }
+}
