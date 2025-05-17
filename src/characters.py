@@ -35,6 +35,17 @@ TRAIT_REACTIONS = {
     # Add more traits as needed...
 }
 
+TRAIT_PROMPTS = {
+    "warrior": "You are a warrior, tough, confident, and focused on combat. You react positively to praise and encouragement, but negatively to weakness or criticism.",
+    "shy": "You are shy, reserved, and easily embarrassed. You react positively to gentle compliments and kindness, but negatively to teasing or bold advances.",
+    "intellectual": "You are an intellectual, curious and thoughtful. You appreciate deep questions and praise for your mind, but dislike shallow comments or insults.",
+    "romantic": "You are romantic, affectionate, and enjoy flirtation. You react positively to compliments and invitations, but negatively to criticism or teasing.",
+    "sarcastic": "You are sarcastic, witty, and often make jokes. You react positively to teasing and jokes, but negatively to praise or farewells.",
+    "friendly": "You are friendly, warm, and supportive. You react positively to greetings, praise, and encouragement, but negatively to insults or criticism.",
+    "serious": "You are serious, focused, and dislike jokes. You react positively to statements and requests, but negatively to jokes or flirtation.",
+    # Add more as needed...
+}
+
 def get_asset_path(relative_path):
     """ Get the absolute path to the resource, works for dev and for PyInstaller """
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
@@ -88,16 +99,19 @@ class Character:
 
 class Background:
     def __init__(self, background_name):
-        # Define the base directory for background images
         self.base_dir = os.path.join("..", "assets", "backgrounds")
-        # Load the background image
+        self.name = background_name
         self.image = self.load_image(background_name)
 
     def load_image(self, background_name):
-        # Construct the full path to the background image
         image_path = get_asset_path(os.path.join(self.base_dir, f"{background_name}.png"))
-        # Load the image
-        return pygame.image.load(image_path)
+        try:
+            return pygame.image.load(image_path)
+        except Exception:
+            # Return a blank surface if not found
+            surf = pygame.Surface((800, 300))  # Adjust size as needed
+            surf.fill((255, 255, 255))
+            return surf
     
 PREDEFINED_CHARACTERS = [
     {

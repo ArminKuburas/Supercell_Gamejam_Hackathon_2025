@@ -1,8 +1,11 @@
 import pygame
 import sys
 from dialogue import DialogueSystem, DialogueOption, DialogueCharacteristic
-from characters import Character, Background
+from characters import Character, Background, TRAIT_PROMPTS, TRAIT_REACTIONS
 from config import FONT_SIZE
+import getpass
+from google import genai
+import csv
 
 import random
 from characters import PREDEFINED_CHARACTERS
@@ -82,6 +85,40 @@ def main_menu():
 
         pygame.display.update()
 
+def build_ai_prompt(character, background, conversation_history, player_message):
+    # Get trait description
+    trait_desc = " ".join([TRAIT_PROMPTS.get(trait, "") for trait in character.personality_traits])
+    env_desc = f"The environment is {background}."
+    # Format conversation history
+    history_lines = []
+    for entry in conversation_history:
+        history_lines.append(f"Player: {entry['player']}")
+        history_lines.append(f"NPC: {entry['npc']}")
+    history_text = " ".join(history_lines)
+    # Build prompt
+    prompt = (
+        f"{trait_desc} {env_desc} Previous interactions: {history_text} "
+        f"Player's message: {player_message} "
+        "The NPC should respond in character, in 1-2 sentences, with the appropriate tone. Please make sure that each sentence is very short. Please make sure to incorporate information from previous interactions."
+    )
+    return prompt
+
+def get_npc_response(client, model_name, prompt):
+    response = client.models.generate_content(
+        model=model_name,
+        contents=[prompt]
+    )
+    return response.text.strip()
+
+def prompt_for_api_key():
+    print("Please enter your Gemini API key (input hidden):")
+    return getpass.getpass("API Key: ")
+
+# Prompt for API key and initialize Gemini client
+api_key = prompt_for_api_key()
+client = genai.Client(api_key=api_key)
+model_name = "gemma-3-27b-it"
+
 def options_menu():
     global SCREEN_WIDTH, SCREEN_HEIGHT, screen  # Declare screen as global
     while True:
@@ -116,7 +153,6 @@ def options_menu():
 
         pygame.display.update()
 
-# ...existing code...
 
 def draw_dialogue_box(text, font, color, surface, center_x, bottom_y, box_width=500, box_height=80, box_color=(0,0,0)):
     # Draw the box
@@ -140,6 +176,42 @@ def draw_dialogue_box(text, font, color, surface, center_x, bottom_y, box_width=
         line_rect = line_surf.get_rect(center=(center_x, box_rect.top + 20 + i * font.get_height()))
         surface.blit(line_surf, line_rect)
 
+def load_backgrounds_from_csv(csv_path):
+    backgrounds = []
+    with open(csv_path, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            backgrounds.append({
+                "name": row["background_name"],
+                "display": row.get("display_name", row["background_name"])
+            })
+    return backgrounds
+
+ALL_BACKGROUNDS = load_backgrounds_from_csv("../assets/characteristics/city_locations.csv")
+
+def choose_next_location():
+    # Pick 4 random backgrounds
+    options = random.sample(ALL_BACKGROUNDS, 4)
+    while True:
+        screen.fill(WHITE)
+        draw_text("Choose your next location:", font, BLACK, screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4)
+        buttons = []
+        for i, bg in enumerate(options):
+            btn_rect = pygame.Rect(SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2 + i * 70, 300, 50)
+            pygame.draw.rect(screen, BLACK, btn_rect)
+            draw_text(bg["display"], font, WHITE, screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + i * 70 + 25)
+            buttons.append((btn_rect, bg["name"]))
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mx, my = pygame.mouse.get_pos()
+                for btn_rect, bg_name in buttons:
+                    if btn_rect.collidepoint((mx, my)):
+                        return bg_name
+
 def game_loop():
     current_idx = random.randint(0, len(PREDEFINED_CHARACTERS) - 1)
     char_info = PREDEFINED_CHARACTERS[current_idx]
@@ -148,6 +220,7 @@ def game_loop():
     dialogue_system = DialogueSystem(SCREEN_WIDTH, SCREEN_HEIGHT)
     last_response = ""
     conversations = 0
+    conversation_history = []
 
     while True:
         screen.fill(WHITE)
@@ -192,31 +265,37 @@ def game_loop():
                 if conversations < 5:
                     selected_option = dialogue_system.handle_click(event.pos)
                     if selected_option:
+                        player_message = selected_option.text
+                        # Build AI prompt
+                        background_name = background.name
+                        ai_prompt = build_ai_prompt(character, background_name, conversation_history, player_message)
+                        print(f"AI Prompt: {ai_prompt}")
+                        # Get AI response
+                        npc_response = get_npc_response(client, model_name, ai_prompt)
+                        # Save to history
+                        conversation_history.append({"player": player_message, "npc": npc_response})
+                        # Update visuals
                         reaction = character.react_to_dialogue(selected_option)
                         character.set_sprite_by_reaction(reaction)
-                        last_response = character.get_response_by_reaction(reaction)
+                        last_response = npc_response
                         dialogue_system.selected_dialogue_options = dialogue_system.select_random_dialogue_options()
                         conversations += 1
-
+                        
         # If 5 conversations reached, show prompt and wait for SPACE
         if conversations >= 5:
             waiting_for_space = True
             while waiting_for_space:
-                # Draw everything as usual
+                # ...draw everything and show prompt...
                 screen.fill(WHITE)
                 scaled_background = pygame.transform.scale(background.image, (SCREEN_WIDTH, SCREEN_HEIGHT // 2))
                 screen.blit(scaled_background, (0, 0))
-
                 char_width, char_height = character.current_sprite.get_size()
                 aspect_ratio = char_width / char_height
                 new_char_height = SCREEN_HEIGHT // 2
                 new_char_width = int(new_char_height * aspect_ratio)
                 scaled_character = pygame.transform.smoothscale(character.current_sprite, (new_char_width, new_char_height))
                 screen.blit(scaled_character, (SCREEN_WIDTH // 2 - new_char_width // 2, SCREEN_HEIGHT // 4))
-
                 dialogue_system.draw_dialogue_options(screen, font)
-
-                # Draw the character's response above the character
                 if last_response:
                     char_box_center_x = SCREEN_WIDTH // 2
                     char_box_bottom_y = SCREEN_HEIGHT // 4
@@ -231,10 +310,8 @@ def game_loop():
                         box_height=80,
                         box_color=(0, 0, 0)
                     )
-
-                # Draw the "Press SPACE" prompt
                 draw_dialogue_box(
-                    "Press SPACE to meet the next character!",
+                    "Press SPACE to choose your next location!",
                     font,
                     (255, 255, 0),
                     screen,
@@ -245,7 +322,6 @@ def game_loop():
                     box_color=(0, 0, 0)
                 )
                 pygame.display.update()
-
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         pygame.quit()
@@ -256,12 +332,17 @@ def game_loop():
                         if event.key == pygame.K_SPACE:
                             waiting_for_space = False
 
+            # 2. Let player choose next location
+            next_bg_name = choose_next_location()
+            background = Background(next_bg_name)
+
             # After exiting the loop, fade and switch character
             fade_to_black(screen)
             character, background, current_idx = pick_new_character(exclude_index=current_idx)
             dialogue_system.selected_dialogue_options = dialogue_system.select_random_dialogue_options()
             last_response = ""
             conversations = 0
+            conversation_history = []
         
 if __name__ == "__main__":
     main_menu()
