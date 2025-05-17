@@ -14,8 +14,8 @@ from characters import PREDEFINED_CHARACTERS
 pygame.init()
 
 # Set up some constants
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 FONT_SIZE = 36
@@ -288,7 +288,7 @@ def options_menu():
 
         pygame.display.update()
 
-def draw_speech_bubble(text, font, color, surface, center_x, bottom_y, bubble_width=500, bubble_height=80, bubble_color=(255, 255, 255), border_color=(0, 0, 0), border_width=3):
+def draw_speech_bubble(text, font, color, surface, center_x, bottom_y, bubble_width=500, bubble_height=150, bubble_color=(255, 255, 255), border_color=(0, 0, 0), border_width=3):
     # Bubble rectangle (rounded)
     bubble_rect = pygame.Rect(center_x - bubble_width // 2, bottom_y - bubble_height, bubble_width, bubble_height)
 
@@ -411,9 +411,9 @@ def game_loop():
                 (0, 0, 0),
                 screen,
                 char_box_center_x - 90,
-                char_box_bottom_y - 50,
+                char_box_bottom_y + 30,
                 bubble_width=500,
-                bubble_height=80,
+                bubble_height=200,
                 bubble_color=(255, 255, 255),
                 border_color=(0, 0, 0),
                 border_width=3)
@@ -474,9 +474,9 @@ def game_loop():
                         (0, 0, 0),
                         screen,
                         char_box_center_x - 90,
-                        char_box_bottom_y - 50,
+                        char_box_bottom_y + 30,
                         bubble_width=500,
-                        bubble_height=80,
+                        bubble_height=200,
                         bubble_color=(255, 255, 255),
                         border_color=(0, 0, 0),
                         border_width=3)
@@ -488,7 +488,7 @@ def game_loop():
                     SCREEN_WIDTH // 2,
                     SCREEN_HEIGHT // 2,
                     bubble_width=500,
-                    bubble_height=80,
+                    bubble_height=200,
                     bubble_color=(255, 255, 255),
                     border_color=(0, 0, 0),
                     border_width=3)
