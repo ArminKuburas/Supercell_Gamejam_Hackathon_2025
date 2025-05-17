@@ -1,35 +1,10 @@
 background_name,display_name
-Apartment_Exterior,Apartment Exterior
-Temple_Summer_Afternoon,Temple (Summer Afternoon)
-Bedroom_Day,Bedroom (Day)
-Park,Park
-Beach,Beach
-Cafe,Cafe
-Tavern,Tavern
-Street_Market,Street Market
-Blacksmiths_Shop,Blacksmith’s Shop
-City_Garden,City Garden
-City_Docks,City Docks
-Town_Square,Town Square
-Church_Courtyard,Church Courtyard
-Marketplace_Alley,Marketplace Alley
-Public_Well,Public Well
-City_Library,City Library
-Horse_Stables,Horse Stables
-City_Sewers_Entrance,City Sewers Entrance
-Graveyard,Graveyard
-Jailers_Quarters,Jailer’s Quarters
-Fishermans_Wharf,Fisherman’s Wharf
-Public_Execution_Site,Public Execution Site
-Bards_Stage,Bard’s Stage
-Noblemans_Manor,Nobleman’s Manor
-Thieves_Den,Thieves’ Den
-Magical_Artifact_Shop,Magical Artifact Shop
-Floating_Market,Floating Market
-Back_Alleyways,Back Alleyways
-Abandoned_Warehouses,Abandoned Warehouses
-Smugglers_Hideout,Smuggler’s Hideout
-Underground_Gambling_Den,Underground Gambling Den
-Black_Market_Bazaar,Black Market Bazaar
-Cursed_Well,Cursed Well
-Underground_Fighting_Pit,Underground Fighting Pit
+marketstreet.png,Street Market
+townsquare.png,Town Square
+townsquare.png,Marketplace Alley
+well.png,Public Well
+sewers.png,City Sewers Entrance
+jail.png,Jailer’s Quarters
+shop.png,Magical Artifact Shop
+alley.png,Back Alleyways
+cursedwell.png,Cursed Well
