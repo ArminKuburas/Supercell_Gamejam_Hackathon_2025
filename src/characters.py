@@ -105,35 +105,35 @@ PREDEFINED_CHARACTERS = [
         "character_name": "john",
         "char_type": "warrior",
         "traits": ["warrior", "serious"],
-        "backgrounds": ["alley", "shop", "townsquare"]
+        "backgrounds": ["alley", "shop", "townsquare", "jail", "sewers", "foodstalls"]
     },
     {
         "name": "Luna",
         "character_name": "luna",
         "char_type": "intellectual",
         "traits": ["intellectual", "shy"],
-        "backgrounds": ["marketstreet", "sewers", "townsquare"]
+        "backgrounds": ["marketstreet", "sewers", "townsquare", "jail", "cursedwell", "shop"]
     },
     {
         "name": "Mika",
         "character_name": "mika",
         "char_type": "romantic",
         "traits": ["romantic", "friendly"],
-        "backgrounds": ["shop", "sewers", "alley"]
+        "backgrounds": ["shop", "sewers", "alley", "well", "cursedwell", "foodstalls"]
     },
     {
         "name": "Rex",
         "character_name": "rex",
         "char_type": "sarcastic",
         "traits": ["sarcastic", "serious"],
-        "backgrounds": ["shop", "townsquare", "sewers"]
+        "backgrounds": ["shop", "sewers", "alley", "well", "cursedwell", "foodstalls", "marketstreet"]
     },
     {
         "name": "Sophie",
         "character_name": "sophie",
         "char_type": "friendly",
         "traits": ["friendly", "shy"],
-        "backgrounds": ["marketstreet", "alley", "townsquare"]
+        "backgrounds": ["alley", "shop", "townsquare", "jail", "sewers", "foodstalls"]
     },
     # Add more as needed...
 ]
