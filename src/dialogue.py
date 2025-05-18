@@ -61,50 +61,34 @@ class DialogueSystem:
         return self.dialogue_options_list[:4]
 
     def draw_dialogue_options(self, screen, font):
-        # Keep large box height
         box_height = 210
-        
-        # NO gap between boxes - boxes will overlap slightly for a stacked effect
-        gap = -150  # Negative gap means boxes will overlap by 5 pixels
-        
-        # Make boxes wider - fixed width regardless of text length
-        box_width = 500  # Fixed width for all boxes
-        
-        # Starting y-position for the bottom box
+        gap = -100
+        box_width = 500
         start_y = self.screen_height - 40 - box_height
-        
-        # Center the boxes horizontally
-        # x = (self.screen_width - box_width) // 2
         x = 50
 
-        # Draw from bottom to top so the top option appears on top when overlapping
-        for i, option in enumerate(reversed(self.selected_dialogue_options)):
-            idx = len(self.selected_dialogue_options) - 1 - i  # Convert to original index
+        # Assign rects in visual order (bottom to top)
+        for idx, option in enumerate(self.selected_dialogue_options):
             y = start_y - idx * (box_height + gap)
-            
-            # Create the rectangle for this option
             option.rect = pygame.Rect(x, y, box_width, box_height)
 
-            # Use the image background if available, otherwise use the stone box
+        # Draw from bottom to top so the top option appears on top when overlapping
+        for option in self.selected_dialogue_options[::-1]:
             if self.option_background:
-                # Scale the background image to fit the option box
                 scaled_bg = pygame.transform.scale(self.option_background, (box_width, box_height))
                 screen.blit(scaled_bg, option.rect)
             else:
-                # Fallback to stone box
                 stone_gray = (120, 120, 120)
                 border_light = (200, 200, 200)
                 draw_stone_box(screen, option.rect, stone_gray, border_light, border_radius=20)
-                
-            # Center the text both horizontally and vertically with slightly larger font
             draw_text(option.text, font, (255, 255, 255), screen, 
                      option.rect.centerx, option.rect.centery, 
                      max_width=box_width - 60,
-                     size_reduction=1.5)  # Slightly larger text (1.5 instead of 2)
+                     size_reduction=1.5)
 
     def handle_click(self, pos):
-        # Check from top to bottom (reversed) so we select the topmost option when they overlap
-        for option in self.selected_dialogue_options:
+        # Check from top to bottom (visually), so topmost option is checked first
+        for option in reversed(self.selected_dialogue_options):
             if option.rect.collidepoint(pos):
                 print(f"Selected: {option.text}")
                 return option

@@ -169,7 +169,7 @@ def build_ai_prompt(character, background, conversation_history, player_message)
     prompt = (
         f"{trait_desc} {env_desc} Previous interactions: {history_text} "
         f"Player's message: {player_message} "
-        "The NPC should respond in character, in 1-2 sentences, with the appropriate tone. Please make sure that each sentence is very short. Please make sure to incorporate information from previous interactions."
+        "The NPC should respond in character, in 1-2 sentences, with the appropriate tone. Please make sure that each sentence is very short. Please make sure to incorporate information from previous interactions. Do not use any emojis just regular words and keep it simple. no blushing, warm face, etc."
     )
     return prompt
 
@@ -178,6 +178,7 @@ def get_npc_response(client, model_name, prompt):
         model=model_name,
         contents=[prompt]
     )
+    print(f"AI Response: {response.text.strip()}")
     return response.text.strip()
 
 def prompt_for_api_key():
@@ -250,19 +251,21 @@ def options_menu():
         button_1 = pygame.Rect(SCREEN_WIDTH // 2 - button_width // 2, SCREEN_HEIGHT // 2 - 50, button_width, button_height)
         button_2 = pygame.Rect(SCREEN_WIDTH // 2 - button_width // 2, SCREEN_HEIGHT // 2 + 20, button_width, button_height)
         button_3 = pygame.Rect(SCREEN_WIDTH // 2 - button_width // 2, SCREEN_HEIGHT // 2 + 90, button_width, button_height)
+        button_4 = pygame.Rect(SCREEN_WIDTH // 2 - button_width // 2, SCREEN_HEIGHT // 2 + 160, button_width, button_height)
         
         # Draw buttons with hover effect
         for button, text, y_pos in [
             (button_1, "800x600", SCREEN_HEIGHT // 2 - 25),
             (button_2, "1024x768", SCREEN_HEIGHT // 2 + 45),
-            (button_3, "Back", SCREEN_HEIGHT // 2 + 115)
+            (button_3, "1920x1080", SCREEN_HEIGHT // 2 + 115),
+            (button_4, "Back to Menu", SCREEN_HEIGHT // 2 + 185)
         ]:
             # Check if mouse is over button
             if button.collidepoint((mx, my)):
                 button_color = (100, 100, 100)  # Lighter when hovered
             else:
                 button_color = (50, 50, 50)  # Darker when not hovered
-                
+
             # Draw button with border
             pygame.draw.rect(screen, WHITE, button, border_radius=10)  # Border
             pygame.draw.rect(screen, button_color, button.inflate(-4, -4), border_radius=8)  # Button
@@ -284,8 +287,11 @@ def options_menu():
                         return  # This return is important as we've restarted the game
                 
                 if button_3.collidepoint((mx, my)):
-                    return  # Return to main menu
-
+                    restart_game(1920, 1080)
+                    return  # This return is important as we've restarted the game
+                if button_4.collidepoint((mx, my)):
+                    # Go back to main menu
+                    return
         pygame.display.update()
 
 def draw_speech_bubble(text, font, color, surface, center_x, bottom_y, bubble_width=500, bubble_height=150, bubble_color=(255, 255, 255), border_color=(0, 0, 0), border_width=3):
@@ -432,6 +438,7 @@ def game_loop():
                     selected_option = dialogue_system.handle_click(event.pos)
                     if selected_option:
                         player_message = selected_option.text
+                        print(f"Player selected: {player_message}")
                         # Build AI prompt
                         background_name = background.name
                         ai_prompt = build_ai_prompt(character, background_name, conversation_history, player_message)
